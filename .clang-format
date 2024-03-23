@@ -47,4 +47,4 @@ TabWidth: 4
 # 赋值运算符前加空格
 SpaceBeforeAssignmentOperators: true
 # 行尾的注释前加1个空格
-SpacesBeforeTrailingComments: 1
+SpacesBeforeTrailingComments: 2 
