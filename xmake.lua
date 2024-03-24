@@ -25,7 +25,6 @@ set_warnings([[everything]])
 set_kind([[binary]])
 add_files([[tests/*.cpp]], [[src/*.cpp]])
 add_packages([[googletest]])
--- add_requires([[googletest]])
 target_end()
 
 -- target([[TBONTB]])

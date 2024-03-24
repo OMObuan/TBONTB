@@ -1,16 +1,21 @@
 [
 {
-  "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/GeneticAlogorithmUnitTest.cpp.o", "tests/GeneticAlogorithmUnitTest.cpp"],
-  "file": "tests/GeneticAlogorithmUnitTest.cpp"
+  "directory": "/home/omo/文档/code-space/cpp-code/TBONTB",
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I", "/home/omo/文档/code-space/cpp-code/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/main.cpp.o", "tests/main.cpp"],
+  "file": "tests/main.cpp"
 },
 {
-  "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/src/main.cpp.o", "src/main.cpp"],
-  "file": "src/main.cpp"
+  "directory": "/home/omo/文档/code-space/cpp-code/TBONTB",
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I", "/home/omo/文档/code-space/cpp-code/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/math_calculate_unit_test.cpp.o", "tests/math_calculate_unit_test.cpp"],
+  "file": "tests/math_calculate_unit_test.cpp"
 },
 {
-  "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/src/math_calculate.cpp.o", "src/math_calculate.cpp"],
+  "directory": "/home/omo/文档/code-space/cpp-code/TBONTB",
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I", "/home/omo/文档/code-space/cpp-code/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/GeneticAlgorithmUnitTest.cpp.o", "tests/GeneticAlgorithmUnitTest.cpp"],
+  "file": "tests/GeneticAlgorithmUnitTest.cpp"
+},
+{
+  "directory": "/home/omo/文档/code-space/cpp-code/TBONTB",
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I", "/home/omo/文档/code-space/cpp-code/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/src/math_calculate.cpp.o", "src/math_calculate.cpp"],
   "file": "src/math_calculate.cpp"
 }]
