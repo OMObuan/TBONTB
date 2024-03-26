@@ -1,6 +1,7 @@
 // Copyright [2024] <OMObuan>
 
 #pragma once
+#include <debug.h>
 #include <gtest/gtest.h>
 #include <math_calculate.h>
 #include <rename_type.h>
@@ -47,16 +48,15 @@ class GeneticAlgorithm {
         }
     auto getValueSum(_FuncPointer) const;
 
-    template <typename _BasicDate, typename _FuncPointer>
+    template <typename _FuncPointer>
         requires requires(_FuncPointer getValueFunction,
-                          const Creature<Chromosome>& anyCreature) {
+                          Creature<Chromosome> const& anyCreature) {
             static_cast<f64>((anyCreature.*getValueFunction)() /
                              (anyCreature.*getValueFunction)());
-            _BasicDate::probabilityPrecision;
         }
-    std::vector<usize> generateRandArray(_FuncPointer) const;
+    std::discrete_distribution<> generateRandArray(_FuncPointer) const;
 
-    Creature<Chromosome> getRandCreature(std::vector<usize> const&) const;
+    Creature<Chromosome> getRandCreature(std::discrete_distribution<>*);
 
     static Chromosome getChormosomeFromBool(
         std::pair<Chromosome, Chromosome> const&, bool);
@@ -80,39 +80,62 @@ class GeneticAlgorithm {
     template <typename _BasicDate, typename _FuncPointer,
               typename _FuncPointer2, typename _FuncPointer3,
               typename _FuncPointer4>
-        requires(requires(Creature<Chromosome> const& c_anyCreature,
-                          Creature<Chromosome>* anyCreature,
-                          _FuncPointer getChormosome,
-                          _FuncPointer2 setChromosome,
-                          Chromosome const& c_anySide, Chromosome* anySide,
-                          _FuncPointer3 getDominance,
-                          _FuncPointer4 variateFunction) {
-            (anyCreature->*getChormosome)();
-            (anyCreature->*setChromosome)(0,
-                                          std::make_pair(c_anySide, c_anySide));
-            (c_anySide.*getDominance)();
-            (anySide->*variateFunction)();
-        } && std::is_same_v<decltype((std::declval<Creature<Chromosome>>().*
-                                      std::declval<_FuncPointer>)()),
-                            std::vector<std::pair<Chromosome, Chromosome>>>)
-    Creature<Chromosome> mateCreature(const Creature<Chromosome>& father,
-                                      const Creature<Chromosome>& mother,
-                                      _FuncPointer getChormosome,
-                                      _FuncPointer2 setChromosome,
-                                      _FuncPointer3 getDominance,
-                                      _FuncPointer4 variateFunction);
+        requires(
+            requires(Creature<Chromosome> const& c_anyCreature,
+                     Creature<Chromosome>* anyCreature,
+                     _FuncPointer getChormosome, _FuncPointer2 setChromosome,
+                     Chromosome const& c_anySide, Chromosome* anySide,
+                     _FuncPointer3 getDominance,
+                     _FuncPointer4 variateFunction) {
+                (anyCreature->*getChormosome)();
+                (c_anySide.*getDominance)();
+                (anySide->*variateFunction)();
+            } &&
+            std::is_same_v<std::decay_t<decltype(((Creature<Chromosome>{}).*
+                                                  (_FuncPointer{}))())>,
+                           std::vector<std::pair<Chromosome, Chromosome>>> &&
+            std::is_same_v<
+                std::decay_t<decltype(((std::decay_t<Creature<Chromosome>>()).*
+                                       (_FuncPointer2{}))())>,
+                std::vector<std::pair<Chromosome, Chromosome>>>)
+    static Creature<Chromosome> mateCreature(const Creature<Chromosome>&,
+                                             const Creature<Chromosome>&,
+                                             _FuncPointer, _FuncPointer2,
+                                             _FuncPointer3, _FuncPointer4);
 
-    template <typename _BasicDate, typename _FuncPointer>
-        requires requires(_FuncPointer getValueFunction,
-                          Creature<Chromosome> const& anyCreature) {
-            _BasicDate::probabilityPrecision;
-            static_cast<f64>((anyCreature.*getValueFunction)() /
-                             (anyCreature.*getValueFunction)());
-            anyCreature.*fuckCreature(anyCreature);
-        }
-    void birthNewCreature(_FuncPointer);
+    template <typename _BasicDate, typename _FuncPointer,
+              typename _FuncPointer2, typename _FuncPointer3,
+              typename _FuncPointer4, typename _FuncPointer5>
+        requires(
+            requires(Creature<Chromosome> const& c_anyCreature,
+                     Creature<Chromosome>* anyCreature,
+                     _FuncPointer getChormosome, _FuncPointer2 setChromosome,
+                     Chromosome const& c_anySide, Chromosome* anySide,
+                     _FuncPointer3 getDominance,
+                     _FuncPointer4 variateFunction) {
+                (anyCreature->*getChormosome)();
+                (c_anySide.*getDominance)();
+                (anySide->*variateFunction)();
+                _BasicDate::increasedCreatureSize;
+            } &&
+            std::is_same_v<std::decay_t<decltype(((Creature<Chromosome>{}).*
+                                                  (_FuncPointer{}))())>,
+                           std::vector<std::pair<Chromosome, Chromosome>>> &&
+            std::is_same_v<
+                std::decay_t<decltype(((std::decay_t<Creature<Chromosome>>()).*
+                                       (_FuncPointer2{}))())>,
+                std::vector<std::pair<Chromosome, Chromosome>>> &&
+            requires(_FuncPointer5 getValueFunction,
+                     const Creature<Chromosome>& anyCreature) {
+                static_cast<f64>((anyCreature.*getValueFunction)() /
+                                 (anyCreature.*getValueFunction)());
+            })
+    void birthNewCreatures(_FuncPointer, _FuncPointer2, _FuncPointer3,
+                           _FuncPointer4, _FuncPointer5);
 
-    std::vector<Creature<Chromosome>> const& getCreatures() const;
+    std::vector<Creature<Chromosome>> const& getPopulation() const;
+
+    std::vector<Creature<Chromosome>>& setPopulation();
 
  private:
     std::vector<Creature<Chromosome>> m_creatures{};
@@ -202,43 +225,29 @@ auto GeneticAlgorithm<Creature, Chromosome>::getValueSum(
 
 template <template <typename Chromosome> class Creature, typename Chromosome>
     requires requires() { Creature<Chromosome>{usize{}}; }
-template <typename _BasicDate, typename _FuncPointer>
+template <typename _FuncPointer>
     requires requires(_FuncPointer getValueFunction,
-                      const Creature<Chromosome>& anyCreature) {
+                      Creature<Chromosome> const& anyCreature) {
         static_cast<f64>((anyCreature.*getValueFunction)() /
                          (anyCreature.*getValueFunction)());
-        _BasicDate::probabilityPrecision;
     }
-std::vector<usize> GeneticAlgorithm<Creature, Chromosome>::generateRandArray(
+std::discrete_distribution<>
+GeneticAlgorithm<Creature, Chromosome>::generateRandArray(
     _FuncPointer getValueFunction) const {
-    std::vector<usize> result{};
-    usize randSize{MATH_CALCULATE::quickNatureNumberPow(
-        10, _BasicDate::probabilityPrecision)};
-    auto valueSum{getValueSum(getValueFunction)};
-    if (valueSum == 0) {
-        return result;
-    }
-    usize nowID{};
+    std::vector<f64> everyCreautreValue;
     for (auto& anyCreature : this->m_creatures) {
-        f64 bit{static_cast<f64>((anyCreature.*getValueFunction)()) /
-                static_cast<f64>(valueSum)};
-        // std::cerr << bit << '\n';
-        usize creatrueSize{static_cast<usize>(std::ceil(bit * randSize))};
-        // std::cerr << creatrueSize << '\n';
-        for (usize _i{1}; _i <= creatrueSize; ++_i) {
-            result.push_back(nowID);
-        }
-        ++nowID;
+        everyCreautreValue.push_back((anyCreature.*getValueFunction)());
     }
-    return result;
+    return std::discrete_distribution<>(everyCreautreValue.begin(),
+                                        everyCreautreValue.end());
 }
 
 template <template <typename Chromosome> class Creature, typename Chromosome>
     requires requires() { Creature<Chromosome>{usize{}}; }
 Creature<Chromosome> GeneticAlgorithm<Creature, Chromosome>::getRandCreature(
-    std::vector<usize> const& randPos) const {
-    std::uniform_int_distribution<usize> randGenerator(0, randPos.size() - 1);
-    return this->m_creatures[randPos[randGenerator(this->m_randomEngine)]];
+    std::discrete_distribution<>* randPos) {
+    return this->m_creatures[static_cast<usize>(
+        (*randPos)(GeneticAlgorithm::m_randomEngine))];
 }
 
 template <template <typename Chromosome> class Creature, typename Chromosome>
@@ -274,8 +283,8 @@ template <typename _FuncPointer>
         (variatedChromosome->*variateFunction)();
     }
 void GeneticAlgorithm<Creature, Chromosome>::variateChromosome(
-    Chromosome* variatedChromosome, _FuncPointer variateChromosome) {
-    (variatedChromosome->*variateChromosome)();
+    Chromosome* variatedChromosome, _FuncPointer variateOperate) {
+    (variatedChromosome->*variateOperate)();
 }
 
 template <template <typename Chromosome> class Creature, typename Chromosome>
@@ -289,69 +298,107 @@ template <typename _BasicDate, typename _FuncPointer, typename _FuncPointer2,
                       _FuncPointer3 getDominance,
                       _FuncPointer4 variateFunction) {
         (anyCreature->*getChormosome)();
-        (anyCreature->*setChromosome)(0, std::make_pair(c_anySide, c_anySide));
         (c_anySide.*getDominance)();
         (anySide->*variateFunction)();
-    } && std::is_same_v<decltype((std::declval<Creature<Chromosome>>().*
-                                  std::declval<_FuncPointer>)()),
-                        std::vector<std::pair<Chromosome, Chromosome>>>)
+    } &&
+             std::is_same_v<std::decay_t<decltype(((Creature<Chromosome>{}).*
+                                                   (_FuncPointer{}))())>,
+                            std::vector<std::pair<Chromosome, Chromosome>>> &&
+             std::is_same_v<
+                 std::decay_t<decltype(((std::decay_t<Creature<Chromosome>>()).*
+                                        (_FuncPointer2{}))())>,
+                 std::vector<std::pair<Chromosome, Chromosome>>>)
 Creature<Chromosome> GeneticAlgorithm<Creature, Chromosome>::mateCreature(
-    const Creature<Chromosome>& father, const Creature<Chromosome>& mother,
-    _FuncPointer getChormosome, _FuncPointer2 setChromosome,
-    _FuncPointer3 getDominance, _FuncPointer4 variateFunction) {
+    Creature<Chromosome> const& father, Creature<Chromosome> const& mother,
+    _FuncPointer getChormosomes, _FuncPointer2 setChromosomes,
+    _FuncPointer3 getDominance, _FuncPointer4 variateOperate) {
     std::uniform_int_distribution<usize> randChromosomeGenerator{0, 1};
     std::uniform_real_distribution<f64> randVariationGenerator{0, 1};
-    usize chromosomeSize = (father.*getChormosome()).size();
+    usize chromosomeSize = (father.*getChormosomes)().size();
+    // _LOOK(std::cerr, chromosomeSize);
     Creature<Chromosome> result{chromosomeSize};
     for (usize _i{}; _i < chromosomeSize; ++_i) {
         bool fatherChromosome{randChromosomeGenerator(m_randomEngine)},
             motherChromosome{randChromosomeGenerator(m_randomEngine)};
         auto fatherSideChromosome{getChormosomeFromBool(
-            father.getChormosome()[_i], fatherChromosome)},
+            (father.*getChormosomes)()[_i], fatherChromosome)},
             motherSideChromosome{getChormosomeFromBool(
-                mother.getChormosome()[_i], motherChromosome)};
+                (mother.*getChormosomes)()[_i], motherChromosome)};
         if (randVariationGenerator(m_randomEngine) <
             _BasicDate::variationRate) {
-            variateChromosome(&fatherSideChromosome, variateFunction);
+            variateChromosome(&fatherSideChromosome, variateOperate);
         }
         if (randVariationGenerator(m_randomEngine) <
             _BasicDate::variationRate) {
-            variateChromosome(&motherSideChromosome, variateFunction);
+            variateChromosome(&motherSideChromosome, variateOperate);
         }
-        (result.*setChromosome)(
-            _i, mixChromosome(fatherSideChromosome, motherSideChromosome,
-                              getDominance));
+        (result.*setChromosomes)()[_i] = mixChromosome(
+            fatherSideChromosome, motherSideChromosome, getDominance);
     }
+    // _LOOK(std::cerr, (result.*getChormosomes)().size());
     return result;
 }
 
 template <template <typename Chromosome> class Creature, typename Chromosome>
     requires requires() { Creature<Chromosome>{usize{}}; }
-template <typename _BasicDate, typename _FuncPointer>
-    requires requires(_FuncPointer getValueFunction,
-                      Creature<Chromosome> const& anyCreature) {
-        _BasicDate::probabilityPrecision;
-        static_cast<f64>((anyCreature.*getValueFunction)() /
-                         (anyCreature.*getValueFunction)());
-        anyCreature.*fuckCreature(anyCreature);
-    }
-void GeneticAlgorithm<Creature, Chromosome>::birthNewCreature(
-    _FuncPointer getValueFunction) {
-    std::vector<usize> randPos{
-        generateRandArray(_BasicDate::probabilityPrecision, getValueFunction)};
+template <typename _BasicDate, typename _FuncPointer, typename _FuncPointer2,
+          typename _FuncPointer3, typename _FuncPointer4,
+          typename _FuncPointer5>
+    requires(
+        requires(Creature<Chromosome> const& c_anyCreature,
+                 Creature<Chromosome>* anyCreature, _FuncPointer getChormosome,
+                 _FuncPointer2 setChromosome, Chromosome const& c_anySide,
+                 Chromosome* anySide, _FuncPointer3 getDominance,
+                 _FuncPointer4 variateFunction) {
+            (anyCreature->*getChormosome)();
+            (c_anySide.*getDominance)();
+            (anySide->*variateFunction)();
+            _BasicDate::increasedCreatureSize;
+        } &&
+        std::is_same_v<std::decay_t<decltype(((Creature<Chromosome>{}).*
+                                              (_FuncPointer{}))())>,
+                       std::vector<std::pair<Chromosome, Chromosome>>> &&
+        std::is_same_v<
+            std::decay_t<decltype(((std::decay_t<Creature<Chromosome>>()).*
+                                   (_FuncPointer2{}))())>,
+            std::vector<std::pair<Chromosome, Chromosome>>> &&
+        requires(_FuncPointer5 getValueFunction,
+                 const Creature<Chromosome>& anyCreature) {
+            static_cast<f64>((anyCreature.*getValueFunction)() /
+                             (anyCreature.*getValueFunction)());
+        })
+void GeneticAlgorithm<Creature, Chromosome>::birthNewCreatures(
+    _FuncPointer getChormosomes, _FuncPointer2 setChromosomes,
+    _FuncPointer3 getDominance, _FuncPointer4 variateOperate,
+    _FuncPointer5 getValueFunction) {
+    // generateRandArray(getValueFunction);
+    auto randPosGenerator{generateRandArray(getValueFunction)};
     usize addCreatureSize =
         std::ceil(this->m_creatures.size() * _BasicDate::increasedCreatureSize);
+    // _LOOK(std::cerr, addCreatureSize);
     for (usize _i = 1; _i <= addCreatureSize; ++_i) {
-        Creature<Chromosome> father{getRandCreature(randPos)},
-            mother{getRandCreature(randPos)},
-            son{GeneticAlgorithm::mateCreature(father, mother,
-                                               getValueFunction)};
-        m_creatures.push_back(son);
+        // getRandCreature(randPosGenerator);
+        Creature<Chromosome> father{getRandCreature(&randPosGenerator)},
+            mother{getRandCreature(&randPosGenerator)},
+            son{GeneticAlgorithm::mateCreature<_BasicDate>(
+                father, mother, getChormosomes, setChromosomes, getDominance,
+                variateOperate)};
+        this->m_creatures.push_back(son);
+        // _LOOK(std::cerr, _i);
+        // _LOOK(std::cerr, (_i <= addCreatureSize));
     }
 }
+
 template <template <typename Chromosome> class Creature, typename Chromosome>
     requires requires() { Creature<Chromosome>{usize{}}; }
 std::vector<Creature<Chromosome>> const&
-GeneticAlgorithm<Creature, Chromosome>::getCreatures() const {
+GeneticAlgorithm<Creature, Chromosome>::getPopulation() const {
     return m_creatures;
+}
+
+template <template <typename Chromosome> class Creature, typename Chromosome>
+    requires requires() { Creature<Chromosome>{usize{}}; }
+std::vector<Creature<Chromosome>>&
+GeneticAlgorithm<Creature, Chromosome>::setPopulation() {
+    return this->m_creatures;
 }

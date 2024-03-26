@@ -6,6 +6,7 @@
 
 #include <GeneticAlgorithm.hpp>
 #include <array>
+#include <cassert>
 #include <random>
 #include <utility>
 
@@ -21,9 +22,9 @@ struct Creature {
 
 TEST(GeneticAlgorithmUnitTest, initCreaturesUnitTest) {
     GeneticAlgorithm<Creature, i32> testObject(250);
-    ASSERT_EQ(testObject.getCreatures().size(), 250);
+    ASSERT_EQ(testObject.getPopulation().size(), 250);
     testObject.initCreatures(&Creature<i32>::initCreature);
-    for (auto &anyCreature : testObject.getCreatures()) {
+    for (auto &anyCreature : testObject.getPopulation()) {
         ASSERT_EQ(anyCreature.val, 0);
     }
 }
@@ -76,9 +77,9 @@ TEST(GeneticAlgorithmUnitTest, EliminateCreaturesUnitTest) {
     GeneticAlgorithm<Creature, i32> testObject(100);
     testObject.initCreatures(&Creature<i32>::initCreatures);
     testObject.eliminateCreatures<BasicDate>(&Creature<i32>::getValue);
-    ASSERT_EQ(testObject.getCreatures().size(), 25);
+    ASSERT_EQ(testObject.getPopulation().size(), 25);
     // i32 nowVal = 100;
-    for (auto &anyCreature : testObject.getCreatures()) {
+    for (auto &anyCreature : testObject.getPopulation()) {
         // std::cerr << anyCreature.getValue() << std::endl;
         ASSERT_GE(anyCreature.getValue(), 76);
         // --nowVal;
@@ -138,22 +139,21 @@ struct BasicDate {
     static constexpr usize probabilityPrecision = 2;
 };
 
+std::default_random_engine g_engine{static_cast<usize>(std::time(nullptr))};
+
 TEST(GeneticAlgorithmUnitTest, GenerateRandArryUnitTest) {
+    usize loopCnt{MATH_CALCULATE::quickNatureNumberPow(10, 5)}, zeroCnt{};
     GeneticAlgorithm<Creature, i32> testObject(101);
     testObject.initCreatures(&Creature<i32>::initCreature);
-    auto result{
-        testObject.generateRandArray<BasicDate>(&Creature<i32>::getValue)};
-    std::array<usize, 101> testArr{};
-    for (auto anyElement : result) {
-        ++testArr[anyElement];
+    auto result{testObject.generateRandArray(&Creature<i32>::getValue)};
+    for (usize _i{1}; _i <= loopCnt; ++_i) {
+        usize value{static_cast<usize>(result(g_engine))};
+        if (value == 0) {
+            ++zeroCnt;
+        }
     }
-    // for (auto anyElement : testArr) {
-    // std::cerr << anyElement << '\n';
-    // }
-    ASSERT_EQ(testArr[0], 50);
-    for (usize i = 1; i < 101; ++i) {
-        ASSERT_EQ(testArr[i], 1);
-    }
+    ASSERT_LE(zeroCnt, static_cast<usize>(loopCnt * 0.6));
+    ASSERT_GE(zeroCnt, static_cast<usize>(loopCnt * 0.4));
 }
 
 }  // namespace TEST_FOR_GENERATE_RAND_ARR
@@ -188,12 +188,11 @@ struct BasicDate {
 TEST(GeneticAlgorithmUnitTest, GenerateRandCreatureUnitTest) {
     GeneticAlgorithm<Creature, i32> testObject(100);
     testObject.initCreatures(&Creature<i32>::initialValue);
-    auto result{
-        testObject.generateRandArray<BasicDate>(&Creature<i32>::getValue)};
+    auto result{testObject.generateRandArray(&Creature<i32>::getValue)};
     usize loopCnt{100000};
     usize twoCnt{};
     while (loopCnt--) {
-        if (testObject.getRandCreature(result).val == 2) {
+        if (testObject.getRandCreature(&result).val == 2) {
             ++twoCnt;
         }
     }
@@ -320,9 +319,14 @@ struct Chromosome {
 
     i32 getValue() const { return value; }
 
+    void variateChromosome() {}
+
     f64 dominance{};
     i32 value{};
+    static usize variateCnt;
 };
+
+usize Chromosome::variateCnt{};
 
 template <typename Chromosome>
 struct Creature {
@@ -332,16 +336,23 @@ struct Creature {
     explicit Creature(usize chromosomeSize)
         : homolousChromosomes{chromosomeSize} {}
 
-    std::vector<std::pair<Chromosome, Chromosome>> const &getChromosomes() {
+    std::vector<std::pair<Chromosome, Chromosome>> const &getChromosomes()
+        const {
         return homolousChromosomes;
     }
 
-    void setChromosome(usize id,
-                       std::pair<Chromosome, Chromosome> anyChromosome) {
-        homolousChromosomes[id] = anyChromosome;
+    std::vector<std::pair<Chromosome, Chromosome>> &setChromosome() {
+        return homolousChromosomes;
     }
 
-    void initCreature() { homolousChromosomes = {{{1., 1}, {0., 0}}}; }
+    void initCreatureForOnePair() {
+        homolousChromosomes = {{{1., 1}, {0., 0}}};
+    }
+
+    void initCreatureForTowPair() {
+        homolousChromosomes = {{{1., 1}, {0., 0}}, {{1., 1}, {0., 0}}};
+    }
+
     std::vector<std::pair<Chromosome, Chromosome>> homolousChromosomes{};
 };
 
@@ -350,11 +361,146 @@ struct BasicDate {
 };
 
 TEST(GeneticAlgorithmUnitTest, MateCreatureUnitTest) {
-    usize loop{static_cast<usize>(MATH_CALCULATE::quickNatureNumberPow(10, 5))};
+    usize loop{static_cast<usize>(MATH_CALCULATE::quickNatureNumberPow(10, 5))},
+        dominanceCnt{}, towDominanceCnt{}, formerOneDominanceCnt{},
+        latterOneDominanceCnt{};
+    // usize loop{1};
+    Creature<Chromosome> hybrid{};
+    hybrid.initCreatureForOnePair();
     for (usize _i{1}; _i <= loop; ++_i) {
-        GeneticAlgorithm<Creature, Chromosome>::mateCreature<BasicDate>(
-            Creature<Chromosome>{})
+        auto result =
+            GeneticAlgorithm<Creature, Chromosome>::mateCreature<BasicDate>(
+                hybrid, hybrid, &Creature<Chromosome>::getChromosomes,
+                &Creature<Chromosome>::setChromosome, &Chromosome::getDominance,
+                &Chromosome::variateChromosome);
+        if (result.getChromosomes()[0].first.getValue() == 1) {
+            ++dominanceCnt;
+        }
     }
+    ASSERT_LE(dominanceCnt, static_cast<usize>(loop * 0.8));
+    ASSERT_GE(dominanceCnt, static_cast<usize>(loop * 0.7));
+    hybrid.initCreatureForTowPair();
+    for (usize _i{1}; _i <= loop; ++_i) {
+        auto result =
+            GeneticAlgorithm<Creature, Chromosome>::mateCreature<BasicDate>(
+                hybrid, hybrid, &Creature<Chromosome>::getChromosomes,
+                &Creature<Chromosome>::setChromosome, &Chromosome::getDominance,
+                &Chromosome::variateChromosome);
+        if (result.getChromosomes()[0].first.getValue() == 1 &&
+            result.getChromosomes()[1].first.getValue() == 1) {
+            ++towDominanceCnt;
+        } else if (result.getChromosomes()[0].first.getValue() == 1 &&
+                   result.getChromosomes()[1].first.getValue() == 0) {
+            ++formerOneDominanceCnt;
+        } else if (result.getChromosomes()[0].first.getValue() == 0 &&
+                   result.getChromosomes()[1].first.getValue() == 1) {
+            ++latterOneDominanceCnt;
+        }
+    }
+    ASSERT_LE(towDominanceCnt, static_cast<usize>(loop * 0.6));
+    ASSERT_GE(towDominanceCnt, static_cast<usize>(loop * 0.5));
+    ASSERT_LE(formerOneDominanceCnt, static_cast<usize>(loop * 0.2));
+    ASSERT_GE(formerOneDominanceCnt, static_cast<usize>(loop * 0.1));
+    ASSERT_LE(latterOneDominanceCnt, static_cast<usize>(loop * 0.2));
+    ASSERT_GE(latterOneDominanceCnt, static_cast<usize>(loop * 0.1));
 }
 
 }  // namespace TEST_FOR_MATE_CREATURE
+
+namespace TEST_FOR_BIRTH_NEW_CREATURES {
+
+struct Chromosome {
+ public:
+    Chromosome() = default;
+
+    Chromosome(f64 dominance, i32 val) : dominance{dominance}, value{val} {}
+
+    f64 getDominance() const { return dominance; }
+
+    i32 getValue() const { return value; }
+
+    void variateChromosome() {
+        dominance = 0.;
+        value = 0;
+        // if (MATH_CALCULATE::f64Equal(dominance, 1., 0.0001)) {
+        //     dominance = 0.;
+        //     ++variateCnt;
+        // }
+    }
+
+    f64 dominance{};
+    i32 value{};
+    static usize variateCnt;
+};
+
+usize Chromosome::variateCnt{};
+
+template <typename Chromosome>
+struct Creature {
+ public:
+    Creature() = default;
+
+    explicit Creature(usize chromosomeSize)
+        : homolousChromosomes{chromosomeSize} {}
+
+    Creature(Creature<Chromosome> const &creature) {
+        homolousChromosomes = creature.getChromosomes();
+    }
+
+    Creature(Creature<Chromosome> &&creature) {
+        homolousChromosomes = std::move(creature.getChromosomes());
+    }
+
+    std::vector<std::pair<Chromosome, Chromosome>> const &getChromosomes()
+        const {
+        return homolousChromosomes;
+    }
+
+    std::vector<std::pair<Chromosome, Chromosome>> &setChromosome() {
+        return homolousChromosomes;
+    }
+
+    void initCreature() { homolousChromosomes = {{{1., 1}, {0., 0}}}; }
+
+    i32 getValue() const { return 1; }
+
+    std::vector<std::pair<Chromosome, Chromosome>> homolousChromosomes{};
+};
+
+struct BasicDate {
+    static constexpr f64 variationRate{0.5};
+    static constexpr f64 increasedCreatureSize{1.};
+};
+
+TEST(GeneticAlgorithmUnitTest, BirthNewCreauresUnitTest) {
+    GeneticAlgorithm<Creature, Chromosome> testObject{
+        MATH_CALCULATE::quickNatureNumberPow(10, 5)};
+    testObject.initCreatures(&Creature<Chromosome>::initCreature);
+    testObject.birthNewCreatures<BasicDate>(
+        &Creature<Chromosome>::getChromosomes,
+        &Creature<Chromosome>::setChromosome, &Chromosome::getDominance,
+        &Chromosome::variateChromosome, &Creature<Chromosome>::getValue);
+    usize populationSize{testObject.getPopulation().size()}, oneCnt{};
+    // _LOOK(std::cerr, populationSize);
+    // _LOOK(std::cerr, Chromosome::variateCnt);
+    // usize AA{};
+    for (usize _i{MATH_CALCULATE::quickNatureNumberPow(10, 5)};
+         _i < populationSize; ++_i) {
+        ASSERT_TRUE(MATH_CALCULATE::f64Equal(
+            testObject.getPopulation()[_i].getChromosomes()[0].first.getValue(),
+            testObject.getPopulation()[_i]
+                .getChromosomes()[0]
+                .first.getDominance(),
+            0.00001));
+        if (testObject.getPopulation()[_i]
+                .getChromosomes()[0]
+                .first.getValue() == 1) {
+            ++oneCnt;
+        }
+    }
+    // _LOOK(std::cerr, AA);
+    ASSERT_LE(oneCnt, static_cast<usize>(8. / 16. / 2. * populationSize));
+    ASSERT_GE(oneCnt, static_cast<usize>(6. / 16. / 2. * populationSize));
+}
+
+}  // namespace TEST_FOR_BIRTH_NEW_CREATURES

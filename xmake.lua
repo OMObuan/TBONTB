@@ -20,10 +20,14 @@ package_end()
 add_requires([[googletest]])
 
 target([[TBONTB]])
-add_includedirs([[include/]])
+add_cxxflags([[-fprofile-arcs]])
+add_cxxflags([[-ftest-coverage]])
+add_ldflags([[-fprofile-arcs]])
+add_ldflags([[-ftest-coverage]])
+add_includedirs([[include]], path.join(os.scriptdir(), [[tests]], [[hello_world]], [[include]]))
 set_warnings([[everything]])
 set_kind([[binary]])
-add_files([[tests/*.cpp]], [[src/*.cpp]])
+add_files([[tests/*.cpp]], [[src/*.cpp]], path.join(os.scriptdir(), [[tests]], [[hello_world]], [[src/*.cpp]]))
 add_packages([[googletest]])
 target_end()
 
@@ -98,8 +102,8 @@ target_end()
 --    add_syslinks([[z]], [[pthread]])
 --
 --    -- add compilation and link flags
---    add_cxflags(]]-stdnolib]], ]]-fno-strict-aliasing]])
---    add_ldflags(]]-L/usr/local/lib]], ]]-lpthread]], {force = true})
+--    add_cxflags([[-stdnolib]], [[-fno-strict-aliasing]])
+--    add_ldflags([[-L/usr/local/lib]], [[-lpthread]], {force = true})
 --
 -- @endcode
 --
