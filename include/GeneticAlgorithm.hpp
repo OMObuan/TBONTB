@@ -28,14 +28,21 @@ class GeneticAlgorithm {
         }
     void initCreatures(_FuncPointer);
 
-    template <typename _BasicDate>
-        requires requires() { _BasicDate::eliminatedRate; }
+    template <typename _FuncPointer>
+        requires requires(Creature<Chromosome> const& anyCreature,
+                          _FuncPointer printChromosomes) {
+            (anyCreature.*printChromosomes)();
+        }
+    void printCreatures(_FuncPointer) const;
+
+    template <typename _BasicData>
+        requires requires() { _BasicData::eliminatedRate; }
     static constexpr usize getEliminatedSize(usize);
 
-    template <typename _BasicDate, typename _FuncPointer>
+    template <typename _BasicData, typename _FuncPointer>
         requires requires(Creature<Chromosome> const& lftOrRgt,
                           _FuncPointer getValueFunction) {
-            _BasicDate::eliminatedRate;
+            _BasicData::eliminatedRate;
             (lftOrRgt.*getValueFunction)() < (lftOrRgt.*getValueFunction)();
         }
     void eliminateCreatures(_FuncPointer);
@@ -77,7 +84,7 @@ class GeneticAlgorithm {
         }
     static void variateChromosome(Chromosome*, _FuncPointer);
 
-    template <typename _BasicDate, typename _FuncPointer,
+    template <typename _BasicData, typename _FuncPointer,
               typename _FuncPointer2, typename _FuncPointer3,
               typename _FuncPointer4>
         requires(
@@ -103,7 +110,7 @@ class GeneticAlgorithm {
                                              _FuncPointer, _FuncPointer2,
                                              _FuncPointer3, _FuncPointer4);
 
-    template <typename _BasicDate, typename _FuncPointer,
+    template <typename _BasicData, typename _FuncPointer,
               typename _FuncPointer2, typename _FuncPointer3,
               typename _FuncPointer4, typename _FuncPointer5>
         requires(
@@ -116,7 +123,7 @@ class GeneticAlgorithm {
                 (anyCreature->*getChormosome)();
                 (c_anySide.*getDominance)();
                 (anySide->*variateFunction)();
-                _BasicDate::increasedCreatureSize;
+                _BasicData::increasedCreatureRate;
             } &&
             std::is_same_v<std::decay_t<decltype(((Creature<Chromosome>{}).*
                                                   (_FuncPointer{}))())>,
@@ -170,30 +177,44 @@ void GeneticAlgorithm<Creature, Chromosome>::initCreatures(
 
 template <template <typename Chromosome> class Creature, typename Chromosome>
     requires requires() { Creature<Chromosome>{usize{}}; }
-template <typename _BasicDate>
-    requires requires() { _BasicDate::eliminatedRate; }
-constexpr usize GeneticAlgorithm<Creature, Chromosome>::getEliminatedSize(
-    usize size) {
-    return static_cast<usize>(
-        std::ceil(size * (1. - _BasicDate::eliminatedRate)));
+template <typename _FuncPointer>
+    requires requires(Creature<Chromosome> const& anyCreature,
+                      _FuncPointer printChromosomes) {
+        (anyCreature.*printChromosomes)();
+    }
+void GeneticAlgorithm<Creature, Chromosome>::printCreatures(
+    _FuncPointer printChromosome) const {
+    for (auto& anyCreature : this->m_creatures) {
+        (anyCreature.*printChromosome)();
+    }
 }
 
 template <template <typename Chromosome> class Creature, typename Chromosome>
     requires requires() { Creature<Chromosome>{usize{}}; }
-template <typename _BasicDate, typename _FuncPointer>
+template <typename _BasicData>
+    requires requires() { _BasicData::eliminatedRate; }
+constexpr usize GeneticAlgorithm<Creature, Chromosome>::getEliminatedSize(
+    usize size) {
+    return static_cast<usize>(
+        std::ceil(size * (1. - _BasicData::eliminatedRate)));
+}
+
+template <template <typename Chromosome> class Creature, typename Chromosome>
+    requires requires() { Creature<Chromosome>{usize{}}; }
+template <typename _BasicData, typename _FuncPointer>
     requires requires(Creature<Chromosome> const& lftOrRgt,
                       _FuncPointer getValueFunction) {
-        _BasicDate::eliminatedRate;
+        _BasicData::eliminatedRate;
         (lftOrRgt.*getValueFunction)() < (lftOrRgt.*getValueFunction)();
     }
 void GeneticAlgorithm<Creature, Chromosome>::eliminateCreatures(
     _FuncPointer getValueFunction) {
-    if (MATH_CALCULATE::f64Equal(_BasicDate::eliminatedRate, 1., 1e-15)) {
+    if (MATH_CALCULATE::f64Equal(_BasicData::eliminatedRate, 1., 1e-15)) {
         this->m_creatures.clear();
         return void();
     }
     usize dividePos =
-        this->getEliminatedSize<_BasicDate>(this->m_creatures.size());
+        this->getEliminatedSize<_BasicData>(this->m_creatures.size());
     std::ranges::nth_element(
         this->m_creatures, this->m_creatures.begin() + dividePos,
         [getValueFunction](Creature<Chromosome>& lft,
@@ -289,7 +310,7 @@ void GeneticAlgorithm<Creature, Chromosome>::variateChromosome(
 
 template <template <typename Chromosome> class Creature, typename Chromosome>
     requires requires() { Creature<Chromosome>{usize{}}; }
-template <typename _BasicDate, typename _FuncPointer, typename _FuncPointer2,
+template <typename _BasicData, typename _FuncPointer, typename _FuncPointer2,
           typename _FuncPointer3, typename _FuncPointer4>
     requires(requires(Creature<Chromosome> const& c_anyCreature,
                       Creature<Chromosome>* anyCreature,
@@ -325,11 +346,11 @@ Creature<Chromosome> GeneticAlgorithm<Creature, Chromosome>::mateCreature(
             motherSideChromosome{getChormosomeFromBool(
                 (mother.*getChormosomes)()[_i], motherChromosome)};
         if (randVariationGenerator(m_randomEngine) <
-            _BasicDate::variationRate) {
+            _BasicData::variationRate) {
             variateChromosome(&fatherSideChromosome, variateOperate);
         }
         if (randVariationGenerator(m_randomEngine) <
-            _BasicDate::variationRate) {
+            _BasicData::variationRate) {
             variateChromosome(&motherSideChromosome, variateOperate);
         }
         (result.*setChromosomes)()[_i] = mixChromosome(
@@ -341,7 +362,7 @@ Creature<Chromosome> GeneticAlgorithm<Creature, Chromosome>::mateCreature(
 
 template <template <typename Chromosome> class Creature, typename Chromosome>
     requires requires() { Creature<Chromosome>{usize{}}; }
-template <typename _BasicDate, typename _FuncPointer, typename _FuncPointer2,
+template <typename _BasicData, typename _FuncPointer, typename _FuncPointer2,
           typename _FuncPointer3, typename _FuncPointer4,
           typename _FuncPointer5>
     requires(
@@ -353,7 +374,7 @@ template <typename _BasicDate, typename _FuncPointer, typename _FuncPointer2,
             (anyCreature->*getChormosome)();
             (c_anySide.*getDominance)();
             (anySide->*variateFunction)();
-            _BasicDate::increasedCreatureSize;
+            _BasicData::increasedCreatureRate;
         } &&
         std::is_same_v<std::decay_t<decltype(((Creature<Chromosome>{}).*
                                               (_FuncPointer{}))())>,
@@ -374,13 +395,13 @@ void GeneticAlgorithm<Creature, Chromosome>::birthNewCreatures(
     // generateRandArray(getValueFunction);
     auto randPosGenerator{generateRandArray(getValueFunction)};
     usize addCreatureSize =
-        std::ceil(this->m_creatures.size() * _BasicDate::increasedCreatureSize);
+        std::ceil(this->m_creatures.size() * _BasicData::increasedCreatureRate);
     // _LOOK(std::cerr, addCreatureSize);
     for (usize _i = 1; _i <= addCreatureSize; ++_i) {
         // getRandCreature(randPosGenerator);
         Creature<Chromosome> father{getRandCreature(&randPosGenerator)},
             mother{getRandCreature(&randPosGenerator)},
-            son{GeneticAlgorithm::mateCreature<_BasicDate>(
+            son{GeneticAlgorithm::mateCreature<_BasicData>(
                 father, mother, getChormosomes, setChromosomes, getDominance,
                 variateOperate)};
         this->m_creatures.push_back(son);

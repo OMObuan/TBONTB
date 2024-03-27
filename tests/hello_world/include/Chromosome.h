@@ -7,13 +7,20 @@
 
 class Chromosome {
  public:
+    friend std::ofstream &operator<<(std::ofstream &, Chromosome const &);
+
+    friend std::ifstream &operator>>(std::ifstream &, Chromosome &);
+
     Chromosome() = default;
+
+    explicit Chromosome(bool);
 
     Chromosome(f64, std::byte);
 
-    void variateChormosome();
+    void variateChromosome();
 
     std::byte getValue() const;
+
     f64 getDominance() const;
 
  private:

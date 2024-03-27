@@ -92,11 +92,11 @@ target_end()
 --    set_optimize([[fastest]])
 --
 --    -- add include search directories
---    add_includedirs(]]/usr/include]], ]]/usr/local/include]])
+--    add_includedirs([[/usr/include]], [[/usr/local/include]])
 --
 --    -- add link libraries and search directories
 --    add_links([[tbox]])
---    add_linkdirs(]]/usr/local/lib]], ]]/usr/lib]])
+--    add_linkdirs([[/usr/local/lib]], [[/usr/lib]])
 --
 --    -- add system link libraries
 --    add_syslinks([[z]], [[pthread]])

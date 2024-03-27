@@ -5,8 +5,6 @@
 #include <math_calculate.h>
 
 #include <GeneticAlgorithm.hpp>
-#include <array>
-#include <cassert>
 #include <random>
 #include <utility>
 
@@ -14,18 +12,34 @@ namespace TEST_FOR_INIT_CREATURES {
 template <typename Chromosome>
 struct Creature {
  public:
-    Chromosome val{-1};
     Creature() = default;
+
     explicit Creature(usize);
-    void initCreature() { this->val = Chromosome{0}; }
+
+    void initCreature();
+
+    Chromosome getValue() const;
+
+ private:
+    Chromosome m_val{-1};
 };
+
+template <typename Chromosome>
+void Creature<Chromosome>::initCreature() {
+    this->m_val = Chromosome{0};
+}
+
+template <typename Chromosome>
+Chromosome Creature<Chromosome>::getValue() const {
+    return m_val;
+}
 
 TEST(GeneticAlgorithmUnitTest, initCreaturesUnitTest) {
     GeneticAlgorithm<Creature, i32> testObject(250);
     ASSERT_EQ(testObject.getPopulation().size(), 250);
     testObject.initCreatures(&Creature<i32>::initCreature);
     for (auto &anyCreature : testObject.getPopulation()) {
-        ASSERT_EQ(anyCreature.val, 0);
+        ASSERT_EQ(anyCreature.getValue(), 0);
     }
 }
 
@@ -36,18 +50,20 @@ namespace TEST_FOR_GETELIMATED_SIZE {
 template <typename Chromosome>
 struct Creature {
     Creature() = default;
+
     explicit Creature(usize) {}
 };
-struct BasicDate {
-    static constexpr double eliminatedRate = 0.5;
+
+struct BasicData {
+    static constexpr double eliminatedRate{0.5};
 };
 
 TEST(GeneticAlgorithmUnitTest, GetElimatedSizeUnitTest) {
     ASSERT_EQ(
-        (GeneticAlgorithm<Creature, i32>::getEliminatedSize<BasicDate>(250)),
+        (GeneticAlgorithm<Creature, i32>::getEliminatedSize<BasicData>(250)),
         (static_cast<usize>(125)));
     ASSERT_EQ(
-        (GeneticAlgorithm<Creature, i32>::getEliminatedSize<BasicDate>(251)),
+        (GeneticAlgorithm<Creature, i32>::getEliminatedSize<BasicData>(251)),
         (static_cast<usize>(126)));
 }
 
@@ -57,26 +73,42 @@ namespace TEST_FOR_ELIMINATE_CREATURE {
 
 template <typename Chromosome>
 struct Creature {
- private:
-    static Chromosome nowVal;
-
  public:
-    Chromosome val{};
-    void initCreatures() { this->val = nowVal--; }
-    Chromosome getValue() const { return val; }
+    Creature() = default;
+
+    explicit Creature(usize);
+
+    void initCreatures();
+
+    Chromosome getValue() const;
+
+ private:
+    static Chromosome m_nowVal;
+
+    Chromosome m_val{};
 };
 
 template <typename Chromosome>
-Chromosome Creature<Chromosome>::nowVal{100};
+void Creature<Chromosome>::initCreatures() {
+    this->m_val = m_nowVal--;
+}
 
-struct BasicDate {
+template <typename Chromosome>
+Chromosome Creature<Chromosome>::getValue() const {
+    return m_val;
+}
+
+template <typename Chromosome>
+Chromosome Creature<Chromosome>::m_nowVal{100};
+
+struct BasicData {
     static constexpr double eliminatedRate = 0.75;
 };
 
 TEST(GeneticAlgorithmUnitTest, EliminateCreaturesUnitTest) {
     GeneticAlgorithm<Creature, i32> testObject(100);
     testObject.initCreatures(&Creature<i32>::initCreatures);
-    testObject.eliminateCreatures<BasicDate>(&Creature<i32>::getValue);
+    testObject.eliminateCreatures<BasicData>(&Creature<i32>::getValue);
     ASSERT_EQ(testObject.getPopulation().size(), 25);
     // i32 nowVal = 100;
     for (auto &anyCreature : testObject.getPopulation()) {
@@ -93,16 +125,32 @@ namespace TEST_FOR_GET_VALUE_SUM {
 template <typename Chromosome>
 struct Creature {
  public:
-    Chromosome getValue() const { return val; }
+    Creature() = default;
 
-    void initCreature() { val = ++initialVal; }
+    explicit Creature(usize);
 
-    Chromosome val{};
-    static Chromosome initialVal;
+    Chromosome getValue() const;
+
+    void initCreature();
+
+ private:
+    Chromosome m_val{};
+
+    static Chromosome m_initialVal;
 };
 
 template <typename Chromosome>
-Chromosome Creature<Chromosome>::initialVal{};
+Chromosome Creature<Chromosome>::m_initialVal{};
+
+template <typename Chromosome>
+Chromosome Creature<Chromosome>::getValue() const {
+    return m_val;
+}
+
+template <typename Chromosome>
+void Creature<Chromosome>::initCreature() {
+    m_val = ++m_initialVal;
+}
 
 TEST(GeneticAlgorithmUnitTest, GetValueSumUnitTest) {
     GeneticAlgorithm<Creature, i32> testObject(100);
@@ -117,26 +165,40 @@ namespace TEST_FOR_GENERATE_RAND_ARR {
 template <typename Chromosome>
 struct Creature {
  public:
-    void initCreature() {
-        if (initalID == 0) {
-            val = Chromosome{100};
-        } else {
-            val = Chromosome{1};
-        }
-        ++initalID;
-    }
+    Creature() = default;
 
-    Chromosome getValue() const { return val; }
+    explicit Creature(usize) {}
 
-    Chromosome val{};
-    static i32 initalID;
+    void initCreature();
+
+    Chromosome getValue() const;
+
+ private:
+    Chromosome m_val{};
+
+    static i32 m_initalID;
 };
 
 template <typename Chromosome>
-i32 Creature<Chromosome>::initalID{};
+i32 Creature<Chromosome>::m_initalID{};
 
-struct BasicDate {
-    static constexpr usize probabilityPrecision = 2;
+template <typename Chromosome>
+void Creature<Chromosome>::initCreature() {
+    if (Creature<Chromosome>::m_initalID == 0) {
+        this->m_val = Chromosome{100};
+    } else {
+        this->m_val = Chromosome{1};
+    }
+    ++Creature<Chromosome>::m_initalID;
+}
+
+template <typename Chromosome>
+Chromosome Creature<Chromosome>::getValue() const {
+    return this->m_val;
+}
+
+struct BasicData {
+    static constexpr usize probabilityPrecision{2};
 };
 
 std::default_random_engine g_engine{static_cast<usize>(std::time(nullptr))};
@@ -163,25 +225,39 @@ namespace TEST_FOR_GENERATE_RAND_CREATURE {
 template <typename Chromosome>
 struct Creature {
  public:
-    void initialValue() {
-        if (initalID < 50) {
-            val = 2;
-        } else {
-            val = 1;
-        }
-        ++initalID;
-    }
+    Creature() = default;
 
-    Chromosome getValue() const { return val; }
+    explicit Creature(usize);
 
-    Chromosome val{};
-    static i32 initalID;
+    void initialValue();
+
+    Chromosome getValue() const;
+
+ private:
+    Chromosome m_val{};
+
+    static i32 m_initalID;
 };
 
 template <typename Chromosome>
-i32 Creature<Chromosome>::initalID{};
+i32 Creature<Chromosome>::m_initalID{};
 
-struct BasicDate {
+template <typename Chromosome>
+void Creature<Chromosome>::initialValue() {
+    if (m_initalID < 50) {
+        this->m_val = 2;
+    } else {
+        this->m_val = 1;
+    }
+    ++Creature<Chromosome>::m_initalID;
+}
+
+template <typename Chromosome>
+Chromosome Creature<Chromosome>::getValue() const {
+    return this->m_val;
+}
+
+struct BasicData {
     static constexpr usize probabilityPrecision = 5;
 };
 
@@ -192,16 +268,16 @@ TEST(GeneticAlgorithmUnitTest, GenerateRandCreatureUnitTest) {
     usize loopCnt{100000};
     usize twoCnt{};
     while (loopCnt--) {
-        if (testObject.getRandCreature(&result).val == 2) {
+        if (testObject.getRandCreature(&result).getValue() == 2) {
             ++twoCnt;
         }
     }
     ASSERT_LE(twoCnt, static_cast<usize>(
                           0.75 * MATH_CALCULATE::quickNatureNumberPow(
-                                     10, BasicDate::probabilityPrecision)));
+                                     10, BasicData::probabilityPrecision)));
     ASSERT_GE(twoCnt, static_cast<usize>(
                           0.25 * MATH_CALCULATE::quickNatureNumberPow(
-                                     10, BasicDate::probabilityPrecision)));
+                                     10, BasicData::probabilityPrecision)));
 }
 
 }  // namespace TEST_FOR_GENERATE_RAND_CREATURE
@@ -233,18 +309,27 @@ struct Creature {
 
 struct Chromosome {
  public:
-    explicit Chromosome(i32 dominance, i32 val)
-        : dominance{dominance}, val{val} {}
+    explicit Chromosome(i32, i32);
 
-    bool operator==(const Chromosome &other) const {
-        return (val == other.val && dominance == other.dominance);
-    }
+    bool operator==(const Chromosome &) const;
 
-    i32 getDominance() const { return dominance; }
+    i32 getDominance() const;
 
-    i32 dominance{};
-    i32 val{};
+ private:
+    i32 m_dominance{};
+
+    i32 m_val{};
 };
+
+Chromosome::Chromosome(i32 dominance, i32 val)
+    : m_dominance{dominance}, m_val{val} {}
+
+bool Chromosome::operator==(const Chromosome &other) const {
+    return (this->m_val == other.m_val &&
+            this->m_dominance == other.m_dominance);
+}
+
+i32 Chromosome::getDominance() const { return this->m_dominance; }
 
 TEST(GeneticAlgorithmUnitTest, MixChromosomeUnitTest) {
     ASSERT_EQ(
@@ -264,20 +349,33 @@ struct Creature {
 
 struct Chromosome {
  public:
-    void variateChromosome() {
-        std::uniform_int_distribution<usize> randomValueGenerator{0, 1};
-        std::uniform_real_distribution<f64> randomDominanceGenerator{0., 1.};
-        value = randomValueGenerator(Chromosome::engine);
-        dominance = randomDominanceGenerator(Chromosome::engine);
-    }
+    void variateChromosome();
 
-    i32 value{};
-    f64 dominance{};
-    static std::default_random_engine engine;
+    i32 getValue() const;
+
+    f64 getDominance() const;
+
+ private:
+    i32 m_value{};
+
+    f64 m_dominance{};
+
+    static std::default_random_engine m_engine;
 };
 
-std::default_random_engine Chromosome::engine{
+std::default_random_engine Chromosome::m_engine{
     static_cast<usize>(time(nullptr))};
+
+void Chromosome::variateChromosome() {
+    std::uniform_int_distribution<usize> randomValueGenerator{0, 1};
+    std::uniform_real_distribution<f64> randomDominanceGenerator{0., 1.};
+    this->m_value = randomValueGenerator(Chromosome::m_engine);
+    this->m_dominance = randomDominanceGenerator(Chromosome::m_engine);
+}
+
+i32 Chromosome::getValue() const { return this->m_value; }
+
+f64 Chromosome::getDominance() const { return this->m_dominance; }
 
 TEST(GeneticAlgorithmUnitTest, VariateChromosomeUnitTest) {
     usize loopCnt =
@@ -287,18 +385,15 @@ TEST(GeneticAlgorithmUnitTest, VariateChromosomeUnitTest) {
         Chromosome anyChromosome{};
         GeneticAlgorithm<Creature, Chromosome>::variateChromosome(
             &anyChromosome, &Chromosome::variateChromosome);
-        if (anyChromosome.value == 0) {
+        if (anyChromosome.getValue() == 0) {
             ++zeroCnt;
         }
-        if (MATH_CALCULATE::f64Less(anyChromosome.dominance, 0.5, 0.00001)) {
+        if (MATH_CALCULATE::f64Less(anyChromosome.getDominance(), 0.5,
+                                    0.00001)) {
             ++lessHalfCnt;
         }
     }
-    // _LOOK(std::cerr,
-    //       typeid(MATH_CALCULATE::quickNatureNumberPow(10, 5)).name());
-    // _LOOK(std::cerr,
-    //       static_cast<usize>(MATH_CALCULATE::quickNatureNumberPow(10, 5)));
-    // _LOOK(std::cerr, loopCnt);
+
     ASSERT_LE(zeroCnt, static_cast<usize>(0.6 * loopCnt));
     ASSERT_GE(zeroCnt, static_cast<usize>(0.4 * loopCnt));
     ASSERT_LE(lessHalfCnt, static_cast<usize>(0.6 * loopCnt));
@@ -313,50 +408,80 @@ struct Chromosome {
  public:
     Chromosome() = default;
 
-    Chromosome(f64 dominance, i32 val) : dominance{dominance}, value{val} {}
+    Chromosome(f64, i32);
 
-    f64 getDominance() const { return dominance; }
+    f64 getDominance() const;
 
-    i32 getValue() const { return value; }
+    i32 getValue() const;
 
-    void variateChromosome() {}
+    void variateChromosome();
 
-    f64 dominance{};
-    i32 value{};
-    static usize variateCnt;
+ private:
+    f64 m_dominance{};
+
+    i32 m_value{};
+
+    static usize m_variateCnt;
 };
 
-usize Chromosome::variateCnt{};
+usize Chromosome::m_variateCnt{};
+
+Chromosome::Chromosome(f64 dominance, i32 val)
+    : m_dominance{dominance}, m_value{val} {}
+
+f64 Chromosome::getDominance() const { return this->m_dominance; }
+
+i32 Chromosome::getValue() const { return this->m_value; }
+
+void Chromosome::variateChromosome() {}
 
 template <typename Chromosome>
 struct Creature {
  public:
     Creature() = default;
 
-    explicit Creature(usize chromosomeSize)
-        : homolousChromosomes{chromosomeSize} {}
+    explicit Creature(usize);
 
     std::vector<std::pair<Chromosome, Chromosome>> const &getChromosomes()
-        const {
-        return homolousChromosomes;
-    }
+        const;
 
-    std::vector<std::pair<Chromosome, Chromosome>> &setChromosome() {
-        return homolousChromosomes;
-    }
+    std::vector<std::pair<Chromosome, Chromosome>> &setChromosome();
 
-    void initCreatureForOnePair() {
-        homolousChromosomes = {{{1., 1}, {0., 0}}};
-    }
+    void initCreatureForOnePair();
 
-    void initCreatureForTowPair() {
-        homolousChromosomes = {{{1., 1}, {0., 0}}, {{1., 1}, {0., 0}}};
-    }
+    void initCreatureForTowPair();
 
-    std::vector<std::pair<Chromosome, Chromosome>> homolousChromosomes{};
+ private:
+    std::vector<std::pair<Chromosome, Chromosome>> m_homolousChromosomes{};
 };
 
-struct BasicDate {
+template <typename Chromosome>
+Creature<Chromosome>::Creature(usize chromosomeSize)
+    : m_homolousChromosomes{chromosomeSize} {}
+
+template <typename Chromosome>
+std::vector<std::pair<Chromosome, Chromosome>> const &
+Creature<Chromosome>::getChromosomes() const {
+    return this->m_homolousChromosomes;
+}
+
+template <typename Chromosome>
+std::vector<std::pair<Chromosome, Chromosome>> &
+Creature<Chromosome>::setChromosome() {
+    return this->m_homolousChromosomes;
+}
+
+template <typename Chromosome>
+void Creature<Chromosome>::initCreatureForOnePair() {
+    this->m_homolousChromosomes = {{{1., 1}, {0., 0}}};
+}
+
+template <typename Chromosome>
+void Creature<Chromosome>::initCreatureForTowPair() {
+    this->m_homolousChromosomes = {{{1., 1}, {0., 0}}, {{1., 1}, {0., 0}}};
+}
+
+struct BasicData {
     static constexpr f64 variationRate{};
 };
 
@@ -369,7 +494,7 @@ TEST(GeneticAlgorithmUnitTest, MateCreatureUnitTest) {
     hybrid.initCreatureForOnePair();
     for (usize _i{1}; _i <= loop; ++_i) {
         auto result =
-            GeneticAlgorithm<Creature, Chromosome>::mateCreature<BasicDate>(
+            GeneticAlgorithm<Creature, Chromosome>::mateCreature<BasicData>(
                 hybrid, hybrid, &Creature<Chromosome>::getChromosomes,
                 &Creature<Chromosome>::setChromosome, &Chromosome::getDominance,
                 &Chromosome::variateChromosome);
@@ -382,7 +507,7 @@ TEST(GeneticAlgorithmUnitTest, MateCreatureUnitTest) {
     hybrid.initCreatureForTowPair();
     for (usize _i{1}; _i <= loop; ++_i) {
         auto result =
-            GeneticAlgorithm<Creature, Chromosome>::mateCreature<BasicDate>(
+            GeneticAlgorithm<Creature, Chromosome>::mateCreature<BasicData>(
                 hybrid, hybrid, &Creature<Chromosome>::getChromosomes,
                 &Creature<Chromosome>::setChromosome, &Chromosome::getDominance,
                 &Chromosome::variateChromosome);
@@ -413,70 +538,107 @@ struct Chromosome {
  public:
     Chromosome() = default;
 
-    Chromosome(f64 dominance, i32 val) : dominance{dominance}, value{val} {}
+    Chromosome(f64, i32);
 
-    f64 getDominance() const { return dominance; }
+    f64 getDominance() const;
 
-    i32 getValue() const { return value; }
+    i32 getValue() const;
 
-    void variateChromosome() {
-        dominance = 0.;
-        value = 0;
-        // if (MATH_CALCULATE::f64Equal(dominance, 1., 0.0001)) {
-        //     dominance = 0.;
-        //     ++variateCnt;
-        // }
-    }
+    void variateChromosome();
 
-    f64 dominance{};
-    i32 value{};
-    static usize variateCnt;
+ private:
+    f64 m_dominance{};
+
+    i32 m_value{};
+
+    static usize m_variateCnt;
 };
 
-usize Chromosome::variateCnt{};
+usize Chromosome::m_variateCnt{};
+
+Chromosome::Chromosome(f64 dominance, i32 val)
+    : m_dominance{dominance}, m_value{val} {}
+
+f64 Chromosome::getDominance() const { return this->m_dominance; }
+
+i32 Chromosome::getValue() const { return this->m_value; }
+
+void Chromosome::variateChromosome() {
+    this->m_dominance = 0.;
+    this->m_value = 0;
+}
 
 template <typename Chromosome>
 struct Creature {
  public:
     Creature() = default;
 
-    explicit Creature(usize chromosomeSize)
-        : homolousChromosomes{chromosomeSize} {}
+    explicit Creature(usize);
 
-    Creature(Creature<Chromosome> const &creature) {
-        homolousChromosomes = creature.getChromosomes();
-    }
+    Creature(Creature<Chromosome> const &);
 
-    Creature(Creature<Chromosome> &&creature) {
-        homolousChromosomes = std::move(creature.getChromosomes());
-    }
+    Creature(Creature<Chromosome> &&);
 
     std::vector<std::pair<Chromosome, Chromosome>> const &getChromosomes()
-        const {
-        return homolousChromosomes;
-    }
+        const;
 
-    std::vector<std::pair<Chromosome, Chromosome>> &setChromosome() {
-        return homolousChromosomes;
-    }
+    std::vector<std::pair<Chromosome, Chromosome>> &setChromosome();
 
-    void initCreature() { homolousChromosomes = {{{1., 1}, {0., 0}}}; }
+    void initCreature();
 
-    i32 getValue() const { return 1; }
+    i32 getValue() const;
 
-    std::vector<std::pair<Chromosome, Chromosome>> homolousChromosomes{};
+ private:
+    std::vector<std::pair<Chromosome, Chromosome>> m_homolousChromosomes{};
 };
 
-struct BasicDate {
+template <typename Chromosome>
+Creature<Chromosome>::Creature(usize chromosomeSize)
+    : m_homolousChromosomes{chromosomeSize} {}
+
+template <typename Chromosome>
+Creature<Chromosome>::Creature(Creature<Chromosome> const &creature) {
+    this->m_homolousChromosomes = creature.getChromosomes();
+}
+
+template <typename Chromosome>
+Creature<Chromosome>::Creature(Creature<Chromosome> &&creature) {
+    this->m_homolousChromosomes = std::move(creature.getChromosomes());
+}
+
+template <typename Chromosome>
+std::vector<std::pair<Chromosome, Chromosome>> const &
+Creature<Chromosome>::getChromosomes() const {
+    return this->m_homolousChromosomes;
+}
+
+template <typename Chromosome>
+std::vector<std::pair<Chromosome, Chromosome>> &
+Creature<Chromosome>::setChromosome() {
+    return this->m_homolousChromosomes;
+}
+
+template <typename Chromosome>
+void Creature<Chromosome>::initCreature() {
+    this->m_homolousChromosomes = {{{1., 1}, {0., 0}}};
+}
+
+template <typename Chromosome>
+i32 Creature<Chromosome>::getValue() const {
+    return 1;
+}
+
+struct BasicData {
     static constexpr f64 variationRate{0.5};
-    static constexpr f64 increasedCreatureSize{1.};
+
+    static constexpr f64 increasedCreatureRate{1.};
 };
 
 TEST(GeneticAlgorithmUnitTest, BirthNewCreauresUnitTest) {
     GeneticAlgorithm<Creature, Chromosome> testObject{
         MATH_CALCULATE::quickNatureNumberPow(10, 5)};
     testObject.initCreatures(&Creature<Chromosome>::initCreature);
-    testObject.birthNewCreatures<BasicDate>(
+    testObject.birthNewCreatures<BasicData>(
         &Creature<Chromosome>::getChromosomes,
         &Creature<Chromosome>::setChromosome, &Chromosome::getDominance,
         &Chromosome::variateChromosome, &Creature<Chromosome>::getValue);
