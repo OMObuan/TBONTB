@@ -39,7 +39,7 @@ TEST(HelloWorldUnitTest, HelloWorld) {
         [](Creature<Chromosome>& lft, Creature<Chromosome>& rgt) -> bool {
             return lft.getValue() > rgt.getValue();
         });
-    ASSERT_GE(geneticAlgorithm.getPopulation()[0], 28);
+    ASSERT_GE(geneticAlgorithm.getPopulation()[0].getValue(), 28);
     // for (auto const& anyCreature : geneticAlgorithm.getPopulation()) {
     //     file << anyCreature.getValue() << '\n';
     // }

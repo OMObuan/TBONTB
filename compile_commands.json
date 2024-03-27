@@ -1,36 +1,36 @@
 [
 {
   "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-g", "-Wall", "-Wextra", "-Weffc++", "-O0", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-o", "build/.objs/TBONTB/linux/x86_64/debug/tests/math_calculate_unit_test.cpp.o", "tests/math_calculate_unit_test.cpp"],
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/math_calculate_unit_test.cpp.o", "tests/math_calculate_unit_test.cpp"],
   "file": "tests/math_calculate_unit_test.cpp"
 },
 {
   "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-g", "-Wall", "-Wextra", "-Weffc++", "-O0", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-o", "build/.objs/TBONTB/linux/x86_64/debug/tests/main.cpp.o", "tests/main.cpp"],
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/main.cpp.o", "tests/main.cpp"],
   "file": "tests/main.cpp"
 },
 {
   "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-g", "-Wall", "-Wextra", "-Weffc++", "-O0", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-o", "build/.objs/TBONTB/linux/x86_64/debug/tests/GeneticAlgorithmUnitTest.cpp.o", "tests/GeneticAlgorithmUnitTest.cpp"],
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/GeneticAlgorithmUnitTest.cpp.o", "tests/GeneticAlgorithmUnitTest.cpp"],
   "file": "tests/GeneticAlgorithmUnitTest.cpp"
 },
 {
   "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-g", "-Wall", "-Wextra", "-Weffc++", "-O0", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-o", "build/.objs/TBONTB/linux/x86_64/debug/src/math_calculate.cpp.o", "src/math_calculate.cpp"],
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/src/math_calculate.cpp.o", "src/math_calculate.cpp"],
   "file": "src/math_calculate.cpp"
 },
 {
   "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-g", "-Wall", "-Wextra", "-Weffc++", "-O0", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-o", "build/.objs/TBONTB/linux/x86_64/debug/tests/hello_world/src/main_test.cpp.o", "tests/hello_world/src/main_test.cpp"],
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/hello_world/src/main_test.cpp.o", "tests/hello_world/src/main_test.cpp"],
   "file": "tests/hello_world/src/main_test.cpp"
 },
 {
   "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-g", "-Wall", "-Wextra", "-Weffc++", "-O0", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-o", "build/.objs/TBONTB/linux/x86_64/debug/tests/hello_world/src/Chromosome.cpp.o", "tests/hello_world/src/Chromosome.cpp"],
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/hello_world/src/Chromosome.cpp.o", "tests/hello_world/src/Chromosome.cpp"],
   "file": "tests/hello_world/src/Chromosome.cpp"
 },
 {
   "directory": "/home/omo/code-space/cpp/TBONTB",
-  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-g", "-Wall", "-Wextra", "-Weffc++", "-O0", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-o", "build/.objs/TBONTB/linux/x86_64/debug/tests/hello_world/src/BasicData.cpp.o", "tests/hello_world/src/BasicData.cpp"],
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-Wall", "-Wextra", "-Weffc++", "-O3", "-std=c++20", "-Iinclude", "-I/home/omo/code-space/cpp/TBONTB/tests/hello_world/include", "-I", "/home/omo/code-space/cpp/TBONTB/build/.packages/g/googletest/latest/4e0143c97b65425b855ad5fd03038b6a/include", "-fprofile-arcs", "-ftest-coverage", "-DNDEBUG", "-o", "build/.objs/TBONTB/linux/x86_64/release/tests/hello_world/src/BasicData.cpp.o", "tests/hello_world/src/BasicData.cpp"],
   "file": "tests/hello_world/src/BasicData.cpp"
 }]
