@@ -4,10 +4,10 @@
 #include <TBONTB/debug.h>
 #include <TBONTB/math_calculate.h>
 #include <TBONTB/rename_type.h>
-#include <gtest/gtest.h>
 
 #include <algorithm>
 #include <cmath>
+#include <ctime>
 #include <random>
 #include <type_traits>
 #include <utility>
