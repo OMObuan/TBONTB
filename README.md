@@ -15,6 +15,6 @@ git clone https://github.com/OMObuan/TBONTB.git
 cd  TBONTB
 xmake
 sudo xmake install --root
-``
+```
 
 ## Basic Usage
