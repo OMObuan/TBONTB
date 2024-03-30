@@ -1,10 +1,10 @@
 // Copyright [2024] <OMObuan>
 
 #pragma once
-#include <debug.h>
+#include <TBONTB/debug.h>
+#include <TBONTB/math_calculate.h>
+#include <TBONTB/rename_type.h>
 #include <gtest/gtest.h>
-#include <math_calculate.h>
-#include <rename_type.h>
 
 #include <algorithm>
 #include <cmath>

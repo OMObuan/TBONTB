@@ -1,10 +1,10 @@
 // Copyright [2024] <OMObuan>
 
-#include <debug.h>
+#include <TBONTB/debug.h>
+#include <TBONTB/math_calculate.h>
 #include <gtest/gtest.h>
-#include <math_calculate.h>
 
-#include <GeneticAlgorithm.hpp>
+#include <TBONTB/GeneticAlgorithm.hpp>
 #include <random>
 #include <utility>
 

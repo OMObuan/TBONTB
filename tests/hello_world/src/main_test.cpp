@@ -2,11 +2,11 @@
 
 #include <BasicData.h>
 #include <Chromosome.h>
+#include <TBONTB/rename_type.h>
 #include <gtest/gtest.h>
-#include <rename_type.h>
 
 #include <Creature.hpp>
-#include <GeneticAlgorithm.hpp>
+#include <TBONTB/GeneticAlgorithm.hpp>
 #include <algorithm>
 #include <bitset>
 #include <filesystem>

@@ -19,26 +19,32 @@ package_end()
 
 add_requires([[googletest]])
 
+-- target([[TBONTB_test]])
+-- add_cxxflags([[-fprofile-arcs]])
+-- add_cxxflags([[-ftest-coverage]])
+-- add_ldflags([[-fprofile-arcs]])
+-- add_ldflags([[-ftest-coverage]])
+-- add_includedirs([[include]], path.join(os.scriptdir(), [[tests]], [[hello_world]], [[include]]))
+-- set_warnings([[everything]])
+-- set_kind([[static]])
+-- add_files([[tests/*.cpp]], [[src/*.cpp]], path.join(os.scriptdir(), [[tests]], [[hello_world]], [[src/*.cpp]]))
+-- add_packages([[googletest]])
+-- target_end()
+
 target([[TBONTB]])
 add_cxxflags([[-fprofile-arcs]])
 add_cxxflags([[-ftest-coverage]])
 add_ldflags([[-fprofile-arcs]])
 add_ldflags([[-ftest-coverage]])
-add_includedirs([[include]], path.join(os.scriptdir(), [[tests]], [[hello_world]], [[include]]))
+add_includedirs(path.join(os.scriptdir(), [[include]]),
+    path.join(os.scriptdir(), [[tests]], [[hello_world]], [[include]]))
+add_headerfiles(path.join(os.scriptdir(), [[include]], [[(**.h)]]),
+    path.join(os.scriptdir(), [[include]], [[(**.hpp)]]))
 set_warnings([[everything]])
--- set_kind([[binary]])
-add_files([[tests/*.cpp]], [[src/*.cpp]], path.join(os.scriptdir(), [[tests]], [[hello_world]], [[src/*.cpp]]))
+set_kind([[static]])
+add_files([[src/*.cpp]])
 add_packages([[googletest]])
 target_end()
-
--- target([[TBONTB]])
--- add_includedirs([[include/]])
--- set_warnings([[all]], [[error]])
--- set_kind([[binary]])
--- add_files([[src/*.cpp]])
--- add_packages([[googletest]])
--- -- add_requires([[googletest]])
--- target_end()
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
 --

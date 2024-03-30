@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include <GeneticAlgorithm.hpp>
+#include <TBONTB/GeneticAlgorithm.hpp>
 #include <cstring>
 
 using i32 = int;
